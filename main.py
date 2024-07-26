@@ -2,18 +2,23 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
+import os
 
 
 def main():  
 
+    im_gray = cv2.imread('Rs3高架橋-1.bmp', cv2.IMREAD_GRAYSCALE)
+    im_gray = cv2.imread('Rs3高架橋-1.jpg', cv2.IMREAD_GRAYSCALE)
+    im_gray = cv2.imread('Rs3高架橋-1.png', cv2.IMREAD_GRAYSCALE)
+
     # Load the image of Rs3高架橋-1.bmp
-    files = glob.glob("../test_data/*")
+    files = [path.replace('\\', '/') for path in glob.glob("./test_data/*")]
     rs3_image_path = files[0]
     rs3_image = cv2.imread(rs3_image_path, cv2.IMREAD_GRAYSCALE)
 
     # Load the extracted images from 鉄筋加工図
     extracted_images = {}
-    template_paths = glob.glob("../train_data/*")
+    template_paths = [os.path.normpath(path) for path in glob.glob("./train_data/*")]
     for path in template_paths:
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         extracted_images[path.split('/')[-1]] = img
