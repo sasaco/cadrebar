@@ -18,7 +18,7 @@ def imwrite(filename, img, params=None):
         print(e)
         return False
     
-def imread(filename, flags=cv2.IMREAD_COLOR, dtype=np.uint8):
+def imread(filename, flags=cv2.IMREAD_GRAYSCALE, dtype=np.uint8):
     try:
         n = np.fromfile(filename, dtype)
         img = cv2.imdecode(n, flags)
@@ -28,12 +28,13 @@ def imread(filename, flags=cv2.IMREAD_COLOR, dtype=np.uint8):
         return None
 
 
-def find_rebar_locations(main_image, template_images):
+def find_locations(main_image, template_images):
     detected_locations = {}
+    main_image_gray = cv2.cvtColor(main_image, cv2.COLOR_BGR2GRAY) if len(main_image.shape) == 3 else main_image
     for name, template in template_images.items():
         w, h = template.shape[::-1]
-        res = cv2.matchTemplate(main_image, template, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.8
+        res = cv2.matchTemplate(main_image_gray, template, cv2.TM_CCOEFF_NORMED)
+        threshold = 0.8 # 類似度のしきい値
         loc = np.where(res >= threshold)
         rectangles = []
         for pt in zip(*loc[::-1]):
@@ -65,10 +66,10 @@ class rebar_rectangle:
     def rebar_locations(self, rs3_image_path):  
 
         # Load the image of Rs3高架橋-1.bmp
-        rs3_image = imread(rs3_image_path, cv2.IMREAD_GRAYSCALE)
+        rs3_image = imread(rs3_image_path, cv2.IMREAD_COLOR)
 
         # Perform the rebar location detection
-        rebar_locations = find_rebar_locations(rs3_image, self.extracted_images)
+        rebar_locations = find_locations(rs3_image, self.extracted_images)
 
         # Print the results
         print(rebar_locations)
@@ -86,7 +87,6 @@ class rebar_rectangle:
 
         return rebar_locations, rs3_image
     
-
 
 
 
