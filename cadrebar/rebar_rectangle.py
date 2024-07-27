@@ -34,15 +34,15 @@ def find_locations(main_image, template_images):
     for name, template in template_images.items():
         w, h = template.shape[::-1]
         res = cv2.matchTemplate(main_image_gray, template, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.8 # 類似度のしきい値
+        threshold = 0.4 # 類似度のしきい値
         loc = np.where(res >= threshold)
         rectangles = []
         for pt in zip(*loc[::-1]):
             rect = {
-                "top": pt[1] / main_image.shape[0],
-                "left": pt[0] / main_image.shape[1],
-                "bottom": (pt[1] + h) / main_image.shape[0],
-                "right": (pt[0] + w) / main_image.shape[1]
+                "top": pt[1],
+                "left": pt[0],
+                "bottom": (pt[1] + h),
+                "right": (pt[0] + w)
             }
             rectangles.append(rect)
         detected_locations[name] = rectangles
@@ -79,8 +79,8 @@ class rebar_rectangle:
             for loc in locations:
                 cv2.rectangle(
                     rs3_image, 
-                    (int(loc['left'] * rs3_image.shape[1]), int(loc['top'] * rs3_image.shape[0])),
-                    (int(loc['right'] * rs3_image.shape[1]), int(loc['bottom'] * rs3_image.shape[0])), 
+                    (int(loc['left']), int(loc['top'])),
+                    (int(loc['right']), int(loc['bottom'])), 
                     (255, 0, 0), 
                     2
                 )
